@@ -1,0 +1,119 @@
+### 快速幂
+1. 
+```cpp
+int qpow(int a, int b, int MOD){
+    int res = 1;
+    while(b){
+        if(b & 1){
+            res = res * a % MOD;
+        }
+        a = a * a % MOD;
+        b >>= 1;
+    }
+    return res;
+}
+```
+### dp
+#### eg
+[选择不超过m个区间的最大值dp](https://www.luogu.com.cn/problem/P10911#ide)
+```cpp
+//没选a[i],已选j段 = 没选a[i - 1],选了j段 OR 选了a[i - 1],已选j段
+dp[i][j][0] = max(dp[i - 1][j][0], dp[i - 1][j][1]);
+// = 没选a[i - 1]且选了j - 1段（选a[i]且没选a[i - 1]，段数加1） OR 选了a[i - 1]且选了j段(选a[i]可连成一个区间) + v[i](选a[i])
+dp[i][j][1] = max(dp[i - 1][j - 1][0], dp[i - 1][j][1]) + v[i];
+```
+[01双背包最大价值](https://www.luogu.com.cn/problem/P10987#ide)
+```cpp
+//尝试放a包或者b包，取最大值
+for(int i = 0; i < n; i++){//遍历物品
+        for(int j = a; j >= 0; j--){//a包
+            for(int k = b; k >= 0; k--){//b包
+                //条件放在内层，如果放for里，可能j<w[i]时，不进入for(k),导致不能放在a包时不放入b包
+                if(j >= w[i])
+                dp[j][k] = max(dp[j][k], dp[j - w[i]][k] + w[i]);
+                if(k >= w[i])
+                dp[j][k] = max(dp[j][k], dp[j][k - w[i]] + w[i]);
+                //上面两个if本质上还是max(a, b, c);不会导致一个物品放在两个背包里
+            }
+        }
+}
+```
+#### 1.背包dp
+##### 分类![png](20210117171307407.png)
+##### 组合数/排列数
+1. 组合数先便利物品后便利背包，物品从前到后选或者不选
+2. 排列数先便利背包后便利物品
+##### 01背包
+1. 背包倒序（如果倒序，那么就得都初始化为0），保证物品最多使用一次。从小到大遍历背包，会导致大背包时或许已经选过当前物品了
+2.  
+```cpp
+int value[n], weight[n];
+int bag[num];
+for(int i = 0; i < n; i++){
+    for(int j = num - 1; j > weigth[i]; j--){
+        dp[j] = max(dp[j - weight[i]] + value[i], dp[j]);
+    }
+}
+```
+##### 完全背包
+1. 从小到大遍历背包， 能多选当前物品
+2.  
+```cpp
+for(int i = 0; i < n; i++){
+    for(int j = weight[i]; j < num; j++){
+        dp[j] = max(dp[j - weight[i]] + value[i], dp[j]);
+    }
+}
+```
+### 质数筛法
+##### 埃氏筛
+1. 初始默认都是质数
+素数的倍数不是素数
+外层直到sqrt(N),内层到N
+```cpp
+vector<int> prime;
+vector<bool> isprime(N,true);//初始默认都是质数
+for(int i = 2; i * i <= N; i++){
+    if(isprime[i]){//是素数，素数的倍数不是素数
+        for(int j = i * i; j <= N; j += i){//从i * i开始
+            isprime[j] = false;
+        }
+    }
+}
+for(int i = 2; i < N; i++){
+    if(isprime[i]){
+        prime.push_back(i);
+    }
+}
+```
+2. isprime可以用bitset，比vector<bool>更快
+##### 线性筛
+1. 每个合数只标记一次,比埃氏筛更快
+N >= 1e8时
+2. 
+```cpp
+vector<int> prime;
+vector<bool> isprime(N, true);
+for(int i = 2; i * i <= N; i++){
+    if(isprime[i]){
+        prime.push_back(i);
+    }
+    for(int pri : prime){
+        if(i * pri > N) break;//超出筛范围
+        isprime[i * pri] = false;//标记倍数不是素数
+        if(i % pri == 0) break;/////////保证合数只被筛一次
+    }
+}
+```
+### 反转二进制
+```cpp
+//13(1101) -> 11(1011)
+int reverseBit(int a){
+    int res = 0;
+    while(a){
+        res = (res << 1) + (a & 1);
+        a >>= 1;
+    }
+    return res;
+}
+``` 
