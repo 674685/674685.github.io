@@ -117,12 +117,71 @@ int reverseBit(int a){
     return res;
 }
 ``` 
+### 并查集
+##### Code
+```cpp
+vector<int> pre[N];
+vector<int> rank[N];//
+//初始化
+void init(int n){
+    for(int i = 0; i < n; i++){
+        pre[i] = i;
+    }
+    return;
+}
+//查找
+int find(int u){
+    if(u == pre[u]){
+        return u;
+    }
+    return find(pre[u]);
+}
+//while实现find()
+int find(int u){
+    while(u != pre[u]){
+        u = pre[u];
+    }
+    return u;
+}
+//合并
+void unite(int x, int y){//(join)
+    pre[find(x)] = find(y);//y的根节点是x根节点的父亲
+}
+
+//优化
+//把u的父亲变为u所在集合的根节点，即减小了集合深度
+int find(int u){
+    if(u == pre[u]){
+        return u;
+    }
+    return pre[u] = find(pre[u]);
+}
+
+void init(int n){
+    for(int i = 0; i< n; i++){//需新设rank[N];
+        pre[i] = i;
+        rank[i] = 1;//每个节点的高度都初始为1       
+    }
+}
+//合并过程尽可能减小树的深度
+void unite(int x, int y){
+    int fx = find(x);
+    int fy = find(y);
+    if(rank[fx] > rank[fy]){
+        pre[fy] = fx;
+    }
+    else{
+        if(rank[fx] == rank[fy]) rank[fy]++;//fy当根，别忘++
+        pre[fx] = fy;
+    }
+}
+```
 ### 杂记
-##### 加速IO
+##### 1. 加速IO
 ```cpp
 cin.tie(nullptr);//解绑cin，cout
 ios::sync_with_stdio(false);//关闭同步
 ```
-##### while(cin>>n):
+##### 2. while(cin>>n):
 1. 这里cin>>n的返回值是true/false，用于不确定读取，如果读取成功就返回true，失败(没有数据可读/读取类型不匹配)就false
 2. 单纯cin>>n的返回值是流对象本身
