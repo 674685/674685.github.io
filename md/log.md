@@ -117,3 +117,12 @@ int reverseBit(int a){
     return res;
 }
 ``` 
+### 杂记
+##### 加速IO
+```cpp
+cin.tie(nullptr);//解绑cin，cout
+ios::sync_with_stdio(false);//关闭同步
+```
+##### while(cin>>n):
+1. 这里cin>>n的返回值是true/false，用于不确定读取，如果读取成功就返回true，失败(没有数据可读/读取类型不匹配)就false
+2. 单纯cin>>n的返回值是流对象本身
