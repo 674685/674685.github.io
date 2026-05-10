@@ -118,6 +118,17 @@ int reverseBit(int a){
 }
 ``` 
 ### 并查集
+##### eg
+[小明有多少个朋友](https://www.luogu.com.cn/problem/P2078)
+```cpp
+//维护小明所在集合
+//用find(小明) == find(i)遍历找人(issame)
+```
+##### 注意
+1. 处理输入数据时不是单纯pre[x] = y;, 而是使用join(int x, int y);
+2. 处理输入时指向通常不重要，重要的是连通关系
+3. 关于指向
+![](image.png)
 ##### Code
 ```cpp
 vector<int> pre[N];
@@ -143,11 +154,14 @@ int find(int u){
     }
     return u;
 }
-//合并
+//合并，处理输入数据时使用
 void unite(int x, int y){//(join)
     pre[find(x)] = find(y);//y的根节点是x根节点的父亲
 }
-
+//检查是否是同一个集合
+int issame(int x, y){
+    return find(x) == find(y);
+}
 //优化
 //把u的父亲变为u所在集合的根节点，即减小了集合深度
 int find(int u){
