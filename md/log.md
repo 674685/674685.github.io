@@ -14,7 +14,7 @@ int qpow(int a, int b, int MOD){
 }
 ```
 ### dp
-#### eg
+##### eg
 [选择不超过m个区间的最大值dp](https://www.luogu.com.cn/problem/P10911#ide)
 ```cpp
 //没选a[i],已选j段 = 没选a[i - 1],选了j段 OR 选了a[i - 1],已选j段
@@ -199,3 +199,49 @@ ios::sync_with_stdio(false);//关闭同步
 ##### 2. while(cin>>n):
 1. 这里cin>>n的返回值是true/false，用于不确定读取，如果读取成功就返回true，失败(没有数据可读/读取类型不匹配)就false
 2. 单纯cin>>n的返回值是流对象本身
+##### 3. \b 
+退格符，删除前一个字符
+## 搜索
+### 回溯
+1. 回溯 = dfs + 状态重置
+##### Code
+```cpp
+void backtrack(参数列表){
+    if(终止条件){
+        //保存路径
+        return;
+    }
+    //当前层遍历内容
+    for( ){
+        //保存选择
+        backtrack(参数列表1);
+        //回溯pop_back();
+    }
+}
+```
+### bfs
+##### eg
+[多源bfs相遇](https://www.luogu.com.cn/problem/P12270#ide)
+##### Code
+```cpp
+//网格类型遍历
+void bfs(int x, int y, int n, int m){//n，m为边界
+    queue<pair<int, int>> que;
+    que.push({x, y});//添加起点
+    used[x][y] = true;
+    while(!que.empty()){
+        int curx = que.front().first;//取队首元素
+        int cury = que.front().second;
+        for(int i = 0; i < 方向数; i++){//遍历当前节点的可选择节点
+            int nextx = curx + dir[i][0];
+            int nexty = cury + dir[i][1];
+            if(nextx >= 0 && nextx < n && nexty >= 0 && nexty < n && !used[nextx][nexty]){//合法判断
+                que.push({nextx, nexty});//添加
+                used[nextx][nexty] = true;
+                //其他操作
+            }
+        }
+        que.pop();//出队（curx，cury）
+    }
+}
+```
