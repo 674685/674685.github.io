@@ -1,3 +1,4 @@
+
 ### 快速幂
 1. 
 ```cpp
@@ -117,6 +118,75 @@ int reverseBit(int a){
     return res;
 }
 ``` 
+
+### 杂记
+> 1. 加速IO
+```cpp
+cin.tie(nullptr);//解绑cin，cout
+ios::sync_with_stdio(false);//关闭同步
+```
+> 2. while(cin>>n):
+这里cin>>n的返回值是true/false，用于不确定读取，如果读取成功就返回true，失败(没有数据可读/读取类型不匹配)就false
+> 单纯cin>>n的返回值是流对象本身
+
+> 3. \b 
+退格符，删除前一个字符
+
+> 4. cin>>char不会接收空白符
+cin>>str也不会接收空白符
+
+> 5. ![alt text](image-1.png)
+
+## 搜索
+### 回溯(dfs)
+1. 回溯 = dfs + 状态重置
+##### Code
+```cpp
+void backtrack(参数列表){
+    if(终止条件){
+        //保存路径
+        return;
+    }
+    //当前层遍历内容
+    for(当前节点可选择内容){
+        //保存选择
+        backtrack(参数列表1);
+        //回溯pop_back();
+    }
+}
+```
+### bfs
+##### eg
+1. [多源bfs相遇](https://www.luogu.com.cn/problem/P12270#ide)
+2. [bfs找符合特定要求的倍数](http://47.121.118.174/p/523)
+3. [旋转矩阵得到目标矩阵所需最小操作次数](https://www.luogu.com.cn/problem/P10578#ide)
+```cpp
+//反向操作，bfs预处理出所有可能的初始状态和最小步数
+```
+##### Code
+```cpp
+//网格类型遍历
+void bfs(int x, int y, int n, int m){//n，m为边界
+    queue<pair<int, int>> que;
+    que.push({x, y});//添加起点
+    used[x][y] = true;
+    while(!que.empty()){
+        int curx = que.front().first;//取队首元素
+        int cury = que.front().second;
+        for(int i = 0; i < 方向数; i++){//遍历当前节点的可选择节点
+            int nextx = curx + dir[i][0];
+            int nexty = cury + dir[i][1];
+            if(nextx >= 0 && nextx < n && nexty >= 0 && nexty < n && !used[nextx][nexty]){//合法判断
+                que.push({nextx, nexty});//添加
+                used[nextx][nexty] = true;
+                //其他操作
+            }
+        }
+        que.pop();//出队（curx，cury）
+    }
+}
+```
+# 数据结构
 ### 并查集
 ##### eg
 [小明有多少个朋友](https://www.luogu.com.cn/problem/P2078)
@@ -190,58 +260,67 @@ void unite(int x, int y){
     }
 }
 ```
-### 杂记
-##### 1. 加速IO
-```cpp
-cin.tie(nullptr);//解绑cin，cout
-ios::sync_with_stdio(false);//关闭同步
-```
-##### 2. while(cin>>n):
-1. 这里cin>>n的返回值是true/false，用于不确定读取，如果读取成功就返回true，失败(没有数据可读/读取类型不匹配)就false
-2. 单纯cin>>n的返回值是流对象本身
-##### 3. \b 
-退格符，删除前一个字符
-## 搜索
-### 回溯
-1. 回溯 = dfs + 状态重置
-##### Code
-```cpp
-void backtrack(参数列表){
-    if(终止条件){
-        //保存路径
-        return;
-    }
-    //当前层遍历内容
-    for( ){
-        //保存选择
-        backtrack(参数列表1);
-        //回溯pop_back();
-    }
-}
-```
-### bfs
+### 单调栈
 ##### eg
-[多源bfs相遇](https://www.luogu.com.cn/problem/P12270#ide)
+[接雨水](https://leetcode.cn/problems/trapping-rain-water/)
+##### 注意
+> 栈中放下标
+
+> 找右边就顺序遍历，栈中元素是后面的元素在前面元素的上面/找左边就倒序遍历，下标小的在栈口
 ##### Code
 ```cpp
-//网格类型遍历
-void bfs(int x, int y, int n, int m){//n，m为边界
-    queue<pair<int, int>> que;
-    que.push({x, y});//添加起点
-    used[x][y] = true;
-    while(!que.empty()){
-        int curx = que.front().first;//取队首元素
-        int cury = que.front().second;
-        for(int i = 0; i < 方向数; i++){//遍历当前节点的可选择节点
-            int nextx = curx + dir[i][0];
-            int nexty = cury + dir[i][1];
-            if(nextx >= 0 && nextx < n && nexty >= 0 && nexty < n && !used[nextx][nexty]){//合法判断
-                que.push({nextx, nexty});//添加
-                used[nextx][nexty] = true;
-                //其他操作
-            }
-        }
-        que.pop();//出队（curx，cury）
+//以找右边第一个大于当前值的值的下标之间的距离为例
+//找大于就while处理> ,while中处理出结果
+vector<int> v(n);//原数组
+vector<int> ans;//结果数组
+stack<int> st;//单调栈
+for(int i = 0; i < n; i++){//
+    while(!st.empty() && v[i] > st.top()){
+        ans[st.top()] = i - st.top();
+        st.pop();//记得处理完后推出栈
     }
+    st.push(i);
 }
+return ans;
+```
+
+### 链表
+##### 双向链表
+###### eg
+[特定位置删除，末尾添加，快速求前后项](https://www.luogu.com.cn/problem/P12288#ide)
+###### Code
+```cpp
+typedef struct list{
+    int val;
+    struct list* pre;
+    struct list* nex;
+}lst;
+
+lst* head;
+//初始化
+void init(){
+    head = (lst*)malloc(sizeof(lst));
+    head -> val = -1;
+    head -> pre = head;
+    head -> nex = head;//都指向自己
+}
+
+lst* add(int x){
+    lst* newnode = (lst*)malloc(sizeof(lst));//定义新节点
+    newnode -> val = x;
+    head -> pre -> nex = newnode;
+    newnode -> pre = head -> pre;
+    newnode -> nex = head;
+    head -> pre = newnode;
+    return newnode;//返回新添加的节点
+}
+//删除特定节点
+void delet(lst* node){//a -> b -> c, node == b
+    node -> pre -> nex = node -> nex;//a -> c
+    node -> nex -> pre = node -> pre;//c -> a
+    free(node);//释放node指向的空间
+    node = nullptr;//此处是改变指针的值，不会在函数外起作用/可不写
+}
+
+
 ```
