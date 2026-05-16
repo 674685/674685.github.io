@@ -1,5 +1,32 @@
+# 杂记
+> 1. 加速IO
+```cpp
+cin.tie(nullptr);//解绑cin，cout
+ios::sync_with_stdio(false);//关闭同步
+```
+> 2. while(cin>>n):
+这里cin>>n的返回值是true/false，用于不确定读取，如果读取成功就返回true，失败(没有数据可读/读取类型不匹配)就false
+> 单纯cin>>n的返回值是流对象本身
 
-### 快速幂
+> 3. \b 
+退格符，删除前一个字符
+
+> 4. cin>>char不会接收空白符
+cin>>str也不会接收空白符
+
+> 5. ![alt text](image-1.png)
+
+> 6. sort默认升序
+s.substr()只有一个参数表示从参数到结尾
+string有insert(idx, a)...，能插入在特定位置(idx >= 0)
+
+> 7. getline(cin, s)，读取整行，遇到\n停止并消费该\n
+cin.ignore() 忽略一个字符，从cin -> getline()，要使用在cin后面忽略\n,防止getline得到空字符串
+cin.ignore(x);//忽略x个字符
+cin.ignore(x, char);//忽略x个字符，或者遇到char字符停止
+
+# 算法
+## 快速幂
 1. 
 ```cpp
 int qpow(int a, int b, int MOD){
@@ -14,8 +41,8 @@ int qpow(int a, int b, int MOD){
     return res;
 }
 ```
-### dp
-##### eg
+## dp
+#### eg
 [选择不超过m个区间的最大值dp](https://www.luogu.com.cn/problem/P10911#ide)
 ```cpp
 //没选a[i],已选j段 = 没选a[i - 1],选了j段 OR 选了a[i - 1],已选j段
@@ -39,7 +66,7 @@ for(int i = 0; i < n; i++){//遍历物品
         }
 }
 ```
-#### 1.背包dp
+### 1.背包dp
 ##### 分类![png](20210117171307407.png)
 ##### 组合数/排列数
 1. 组合数先便利物品后便利背包，物品从前到后选或者不选
@@ -66,7 +93,7 @@ for(int i = 0; i < n; i++){
     }
 }
 ```
-### 质数筛法
+## 质数筛法
 ##### 埃氏筛
 1. 初始默认都是质数
 素数的倍数不是素数
@@ -106,7 +133,7 @@ for(int i = 2; i * i <= N; i++){
     }
 }
 ```
-### 反转二进制
+## 反转二进制
 ```cpp
 //13(1101) -> 11(1011)
 int reverseBit(int a){
@@ -119,23 +146,6 @@ int reverseBit(int a){
 }
 ``` 
 
-### 杂记
-> 1. 加速IO
-```cpp
-cin.tie(nullptr);//解绑cin，cout
-ios::sync_with_stdio(false);//关闭同步
-```
-> 2. while(cin>>n):
-这里cin>>n的返回值是true/false，用于不确定读取，如果读取成功就返回true，失败(没有数据可读/读取类型不匹配)就false
-> 单纯cin>>n的返回值是流对象本身
-
-> 3. \b 
-退格符，删除前一个字符
-
-> 4. cin>>char不会接收空白符
-cin>>str也不会接收空白符
-
-> 5. ![alt text](image-1.png)
 
 ## 搜索
 ### 回溯(dfs)
@@ -290,6 +300,13 @@ return ans;
 [特定位置删除，末尾添加，快速求前后项](https://www.luogu.com.cn/problem/P12288#ide)
 ###### Code
 ```cpp
+
+//貌似可以用link改进下面的函数
+void link(lst* a, lst* b){//使得a -> b
+    a -> nex = b;
+    b -> pre = a;
+}//下面操作可以以link为元改写
+
 typedef struct list{
     int val;
     struct list* pre;
@@ -305,7 +322,7 @@ void init(){
     head -> nex = head;//都指向自己
 }
 
-lst* add(int x){
+lst* add(int x){//认为head -> pre 就是尾节点
     lst* newnode = (lst*)malloc(sizeof(lst));//定义新节点
     newnode -> val = x;
     head -> pre -> nex = newnode;
