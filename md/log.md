@@ -25,8 +25,28 @@ cin.ignore() 忽略一个字符，从cin -> getline()，要使用在cin后面忽
 cin.ignore(x);//忽略x个字符
 cin.ignore(x, char);//忽略x个字符，或者遇到char字符停止
 
+> 8. floor(向下取整)配合eps。金额等有精度要求，
+输出两位小数时，printf("%.2lf", floor((ans + eps) * 100) / 100);
+![](image-2.png)
+
+> 9. 二分法l和r的初始化，应根据mid的含义，覆盖所有可能的有意义的值
+
+> 10. bitset//长度为N的二进制串,最右边为最低位
+
+[bitset当集合用，统计集合内元素个数](https://www.luogu.com.cn/problem/P10914#ide)
+//
+```cpp
+#include<bitset>
+bitset<N> bs;
+bitset<8> b1;//00000000
+bs.set(pos);//把下标为pos的位置设置为1,无参则全部1/ bs[pos] = 1;
+bs.reset(pos);//设置为0，无参则全部0
+bs.flip(pos);//同上取反
+bs.count();//返回为1的位置的个数
+
+```
 # 算法
-## 快速幂
+### 快速幂
 1. 
 ```cpp
 int qpow(int a, int b, int MOD){
@@ -39,6 +59,28 @@ int qpow(int a, int b, int MOD){
         b >>= 1;
     }
     return res;
+}
+```
+## 数学
+##### 遍历线段上的整点
+###### eg
+1. [处理每条线段上的整点，>= 2的就是交点](https://www.luogu.com.cn/problem/P10907#ide)
+
+###### code
+```cpp
+int x1, y1, x2, y2;//给定两整点，遍历线段
+int dx = x2 - x1;
+int dy = y2 - y1;
+if(dx == 0 && dy == 0){//给的点重合
+    //处理单点
+}
+int g = gcd(abs(dx), abs(dy));//线段上有g + 1个整点（包括给的点）
+int stepx = dx / g;//步长
+int stepy = dy / g;
+for(int i = 0; i <= g; i++){//包括给定2点
+    int x = x1 + i * stepx;//x1是dx被减数
+    int y = y1 + i * stepy;
+    //处理
 }
 ```
 ## dp
@@ -145,11 +187,26 @@ int reverseBit(int a){
     return res;
 }
 ``` 
+## x转10进制
+```cpp
+//s是x进制下的数
+ll xto10(string s, int x){
+    ll res = 0;
+    ll idx = 0;
+    while(idx < s.size()){
+        if(res > N) return -1;//判断溢出!!!!，看情况
+        res = res * x + s[idx++] - '0';//十以内进制减’0‘，16进制减’A'/'a'
+    }
+    return res;
+}
+```
 
 
 ## 搜索
-### 回溯(dfs)
+### (dfs)回溯
 1. 回溯 = dfs + 状态重置
+##### eg
+1. [生成string全排列，找结果](https://www.luogu.com.cn/problem/P15435#ide)
 ##### Code
 ```cpp
 void backtrack(参数列表){
@@ -183,6 +240,7 @@ void bfs(int x, int y, int n, int m){//n，m为边界
     while(!que.empty()){
         int curx = que.front().first;//取队首元素
         int cury = que.front().second;
+        que.pop();//出队（curx，cury）
         for(int i = 0; i < 方向数; i++){//遍历当前节点的可选择节点
             int nextx = curx + dir[i][0];
             int nexty = cury + dir[i][1];
@@ -192,10 +250,28 @@ void bfs(int x, int y, int n, int m){//n，m为边界
                 //其他操作
             }
         }
-        que.pop();//出队（curx，cury）
     }
 }
 ```
+## 字符串
+### 字符串哈希
+##### Code
+```cpp
+//另一种ull，自然溢出
+//单哈希：base > 字符集（下面为s[i]的可能种类数）
+using ll = long long;//
+const int base = 131;//看做把字符串变成base进制 131 13331等
+const int mod = 1e9 + 7;//余数
+ll tohash(string s){
+    ll res = 0;
+    for(int i = 0; i < s.size(); i++){
+        res = (res * base % mod + (s[i] - 'a' + 1)) % mod;//小写字母映射到1 - 26上，+1为了避免0(加上映射能让哈希值更紧凑，理论上减小冲突)
+    }
+    return res;
+}
+```
+
+
 # 数据结构
 ### 并查集
 ##### eg
@@ -242,7 +318,9 @@ void unite(int x, int y){//(join)
 int issame(int x, y){
     return find(x) == find(y);
 }
-//优化
+
+//优化:
+
 //把u的父亲变为u所在集合的根节点，即减小了集合深度
 int find(int u){
     if(u == pre[u]){
@@ -340,4 +418,30 @@ void delet(lst* node){//a -> b -> c, node == b
 }
 
 
+```
+### 树
+##### 树的直径
+1. 树的直径：树上两节点的最大距离
+###### eg
+1. [得到树的直径](https://www.luogu.com.cn/problem/P12873#ide)
+###### Code
+```cpp
+//n个节点
+int ans = 0;
+vector<vector<int>> graph(n);//图
+//f[x]表示 处理过的 从x节点向下走的最大距离
+vector<int> f(n);
+void dfs(int x, int fx){//x和它的父节点
+    for(int v : graph[x]){
+        if(v == fx) continue;//不重复遍历父节点
+        dfs(v, x);
+        //维护ans表示 处理过的 在x节点处拐弯的树的直径
+        ans = max(ans, f[x] + f[v] + 1);
+        //f[v] + 1表示 经过v点的 从x向下走的最大距离
+        f[x] = max(f[x], f[v] + 1);//维护f[x] 
+    }
+    return;
+}
+
+dfs(1, 0);//起始节点可以任选，树是联通的/父节点用不存在的节点(1 - n ,选择0等)
 ```
